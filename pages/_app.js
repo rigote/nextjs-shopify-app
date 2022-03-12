@@ -1,43 +1,17 @@
-import fetch from "node-fetch";
-import ApolloClient from "apollo-boost";
-import { ApolloProvider } from "react-apollo";
-import App, { Container } from "next/app";
-import Cookies from "js-cookie";
-import { AppProvider } from "@shopify/polaris";
-import { Provider } from "@shopify/app-bridge-react";
+import { useRouter } from 'next/router'
+import EmbeddedApp from "@components/EmbeddedApp";
+
 import "@shopify/polaris/dist/styles.css";
-import translations from "@shopify/polaris/locales/en.json";
-import ClientRouter from '../components/ClientRouter';
 
-
-const client = new ApolloClient({
-  uri: `${process.env.NEXT_PUBLIC_HOST}/api/shopify/admin/2020-10/graphql`,
-  fetch: fetch,
-  fetchOptions: {
-    credentials: "include",
-  },
-});
-class MyApp extends App {
-  render() {
-    const { Component, pageProps } = this.props;
-    const shopOrigin = pageProps.shopOrigin ?? Cookies.get("shopOrigin");
-    return (
-      <AppProvider i18n={translations}>
-        <Provider
-          config={{
-            apiKey: API_KEY,
-            shopOrigin: shopOrigin,
-            forceRedirect: true,
-          }}
-        >
-          <ClientRouter />
-          <ApolloProvider client={client}>
-            <Component {...pageProps} />
-          </ApolloProvider>
-        </Provider>
-      </AppProvider>
-    );
-  }
+export default function App({ Component, pageProps}) {
+  const {pathname} = useRouter()
+  const isEmbedded = pathname.startsWith('/embedded')
+  return (
+    <>
+      {isEmbedded 
+        ? <EmbeddedApp><Component {...pageProps} /></EmbeddedApp>
+        : <Component {...pageProps} />
+      }
+    </>
+  )
 }
-
-export default MyApp;

@@ -1,77 +1,53 @@
-import React, { useEffect, useState } from "react";
-import { Page, Layout, EmptyState } from "@shopify/polaris";
-import { authenticateShopifyPage } from "@bluebeela/nextjs-shopify-auth";
-import { ResourcePicker, TitleBar } from '@shopify/app-bridge-react';
-import store from 'store-js';
-import ResourceListWithProducts from '../components/ResourceList';
+import Head from 'next/head'
+import styles from '../styles/Home.module.css'
 
-const img = 'https://cdn.shopify.com/s/files/1/0757/9955/files/empty-state.svg';
-
-const Index = () => {
-  const [open, setOpen] = useState(false);
-
-  const handleSelection = (resources) => {
-    const idsFromResources = resources.selection.map((product) => product.id);
-    setOpen(false)
-    store.set('ids', idsFromResources);
-  };
-
-  // test protected api route with shopify
-  useEffect(() => {
-    const api = async () => {
-      const res = await fetch("/api/hello-world");
-      console.log(res);
-    };
-    api();
-  }, []);
-
-  // test protected api route with shopify and proxy of Shopify Admin API Rest
-  useEffect(() => {
-    const api = async () => {
-      const res = await fetch("/api/shopify/admin/2020-10/products?limit=5");
-      const data = await res.json()
-      console.log(data);
-    };
-    api();
-  }, []);
-
-  const emptyState = !store.get('ids');
-
+export default function Home() {
   return (
-    <Page>
-      <TitleBar
-          title="NextJS Example App"
-          primaryAction={{
-          content: 'Select products',
-          onAction: () => setOpen(true),
-        }} />
-        <ResourcePicker
-          resourceType="Product"
-          showVariants={false}
-          open={open}
-          onSelection={(resources) => handleSelection(resources)}
-          onCancel={() => setOpen(false)}
-        />
-      {emptyState ? (
-          <Layout>
-            <EmptyState
-              heading="Discount your products temporarily"
-              action={{
-                content: 'Select products',
-                onAction: () => setOpen(true),
-              }}
-              image={img}
-            >
-              <p>Select products to change their price temporarily.</p>
-            </EmptyState>
-          </Layout>
-        ) : (
-            <ResourceListWithProducts />
-          )}
-    </Page>
-  );
-};
+    <div className={styles.container}>
+      <Head>
+        <title>Create Next App</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-export const getServerSideProps = authenticateShopifyPage();
+      <main className={styles.main}>
+        <h1 className={styles.title}>
+          <a href="https://nextjs.org">Next.js</a> Shopify App Boilerplate
+        </h1>
 
-export default Index;
+        <p className={styles.description}>
+          Read <a href="https://github.com/t-kelly/nextjs-shopify-app">the repo's README.md</a> for instructions to get started
+        </p>
+
+        <div className={styles.grid}>
+          <a href="https://nextjs.org/docs" className={styles.card}>
+            <h3>NextJS Documentation &rarr;</h3>
+            <p>Find in-depth information about Next.js features and API.</p>
+          </a>
+
+          <a href="https://shopify.dev/concepts/apps" className={styles.card}>
+            <h3>Shopify App Development Documentation &rarr;</h3>
+            <p>Learn all about building Apps on Shopify</p>
+          </a>
+
+          <a
+            href="https://shopify.dev/concepts/about-apis"
+            className={styles.card}
+          >
+            <h3>Shopify APIs &rarr;</h3>
+            <p>Our APIs enable your app to solve solve meaningful problems in commerce</p>
+          </a>
+
+          <a
+            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
+            className={styles.card}
+          >
+            <h3>Deploy on Vercel &rarr;</h3>
+            <p>
+              Instantly deploy your Next.js Shopify App to a public URL with Vercel.
+            </p>
+          </a>
+        </div>
+      </main>
+    </div>
+  )
+}
